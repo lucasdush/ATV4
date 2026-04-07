@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Desk - Sistema de Suporte</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Section -->
+        <section id="login-section" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h1>Help Desk</h1>
+                    <p>Acesse sua conta ou cadastre-se</p>
+                </div>
+                
+                <div class="auth-tabs">
+                    <button id="tab-login" class="active" onclick="showAuthTab('login')">Login</button>
+                    <button id="tab-register" onclick="showAuthTab('register')">Cadastrar</button>
+                </div>
+
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">E-mail</label>
+                        <input type="email" id="login-email" required placeholder="seu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Senha</label>
+                        <input type="password" id="login-password" required placeholder="********">
+                    </div>
+                    <div class="form-footer">
+                        <a href="#" onclick="showAuthTab('forgot')">Esqueceu a senha?</a>
+                    </div>
+                    <button type="submit" class="btn-primary">Entrar</button>
+                </form>
+
+                <form id="forgot-form" class="auth-form hidden">
+                    <div class="auth-header">
+                        <h2>Recuperar Senha</h2>
+                        <p>Informe seu e-mail para receber as instruções</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="forgot-email">E-mail</label>
+                        <input type="email" id="forgot-email" required placeholder="seu@email.com">
+                    </div>
+                    <button type="submit" class="btn-primary">Enviar</button>
+                    <div class="form-footer">
+                        <a href="#" onclick="showAuthTab('login')">Voltar ao Login</a>
+                    </div>
+                </form>
+
+                <form id="register-form" class="auth-form hidden">
+                    <div class="form-group">
+                        <label for="reg-name">Nome Completo</label>
+                        <input type="text" id="reg-name" required placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-cpf">CPF</label>
+                        <input type="text" id="reg-cpf" required placeholder="000.000.000-00">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Telefone</label>
+                        <input type="text" id="reg-phone" placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">E-mail</label>
+                        <input type="email" id="reg-email" required placeholder="seu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Senha</label>
+                        <input type="password" id="reg-password" required placeholder="********">
+                    </div>
+                    <button type="submit" class="btn-primary">Criar Conta</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="dashboard-section hidden">
+            <header class="main-header">
+                <div class="header-content">
+                    <h1>Help Desk</h1>
+                    <div class="user-info">
+                        <span id="user-display-name">Carregando...</span>
+                        <button id="logout-btn" class="btn-outline">Sair</button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="dashboard-container">
+                <aside class="sidebar">
+                    <button id="btn-new-ticket" class="btn-primary">Novo Ticket</button>
+                    <nav class="sidebar-nav">
+                        <ul>
+                            <li id="nav-tickets" class="active"><a href="#" onclick="showSection('tickets')">Meus Tickets</a></li>
+                            <li id="nav-clients" class="hidden"><a href="#" onclick="showSection('clients')">Gerenciar Clientes</a></li>
+                            <li id="nav-technicians" class="hidden"><a href="#" onclick="showSection('technicians')">Gerenciar Técnicos</a></li>
+                            <li id="nav-profile"><a href="#" onclick="showSection('profile')">Meu Perfil</a></li>
+                        </ul>
+                    </nav>
+                </aside>
+
+                <div class="content">
+                    <!-- Ticket Section -->
+                    <div id="section-tickets">
+                        <div id="ticket-list-container">
+                            <div class="section-header">
+                                <h2>Tickets</h2>
+                                <div class="filters">
+                                    <select id="filter-status" onchange="loadTickets()">
+                                        <option value="">Todos Status</option>
+                                        <option value="ABERTO">Aberto</option>
+                                        <option value="EM_ANDAMENTO">Em Andamento</option>
+                                        <option value="FECHADO">Fechado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="tickets-list" class="tickets-grid">
+                                <!-- Tickets will be injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Ticket Detail & Chat View -->
+                        <div id="ticket-detail-container" class="hidden">
+                            <div class="section-header">
+                                <button class="btn-outline btn-sm" onclick="showTicketList()">Voltar</button>
+                                <h2 id="detail-ticket-title">Detalhes do Ticket</h2>
+                                <div class="action-buttons">
+                                    <button id="btn-assumir-ticket" class="btn-primary btn-sm hidden" onclick="assumirTicket()">Assumir Ticket</button>
+                                    <button id="btn-transfer-ticket" class="btn-outline btn-sm hidden" onclick="showTransferModal()">Transferir</button>
+                                    <button id="btn-close-ticket" class="btn-outline btn-sm hidden" onclick="closeTicket()">Fechar Ticket</button>
+                                </div>
+                            </div>
+                            <div class="ticket-info-card">
+                                <div class="info-row">
+                                    <span class="info-label">Status:</span>
+                                    <span id="detail-ticket-status" class="status-badge"></span>
+                                    <span class="info-label">Prioridade:</span>
+                                    <span id="detail-ticket-priority"></span>
+                                    <div id="tech-priority-edit" class="hidden">
+                                        <select id="select-priority" class="select-sm">
+                                            <option value="BAIXA">Baixa</option>
+                                            <option value="MEDIA">Média</option>
+                                            <option value="ALTA">Alta</option>
+                                        </select>
+                                        <button class="btn-primary btn-sm" onclick="updatePriority()">OK</button>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Responsável:</span>
+                                    <span id="detail-ticket-tech">Não atribuído</span>
+                                </div>
+                                <p id="detail-ticket-desc" class="ticket-description-full"></p>
+                            </div>
+                            
+                            <div class="chat-container">
+                                <h3>Histórico de Mensagens</h3>
+                                <div id="chat-messages" class="chat-messages">
+                                    <!-- Messages will be injected here -->
+                                </div>
+                                <form id="chat-form" class="chat-input-form">
+                                    <input type="text" id="chat-input" placeholder="Digite sua mensagem..." required>
+                                    <button type="submit" class="btn-primary">Enviar</button>
+                                </form>
+                            </div>
+                        </div>
+
+                                <div id="new-ticket-container" class="hidden">
+                                    <h2>Novo Ticket</h2>
+                                    <form id="new-ticket-form" class="ticket-form">
+                                        <div class="form-group">
+                                            <label for="ticket-title">Título</label>
+                                            <input type="text" id="ticket-title" required placeholder="Assunto do suporte">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ticket-desc">Descrição</label>
+                                            <textarea id="ticket-desc" required placeholder="Descreva seu problema..."></textarea>
+                                        </div>
+                                        <!-- Prioridade removida para Clientes -->
+                                        <div class="form-actions">
+                                            <button type="button" class="btn-outline" onclick="showTicketList()">Cancelar</button>
+                                            <button type="submit" class="btn-primary">Criar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                    </div>
+
+                    <!-- Clients Management Section -->
+                    <div id="section-clients" class="hidden">
+                        <h2>Gerenciar Clientes</h2>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                        <th>CPF</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clients-table-body">
+                                    <!-- Clients will be injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Technicians Management Section -->
+                    <div id="section-technicians" class="hidden">
+                        <div class="section-header">
+                            <h2>Gerenciar Técnicos</h2>
+                            <button class="btn-primary btn-sm" onclick="showNewTechnicianModal()">Novo Técnico</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                        <th>Nível</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="technicians-table-body">
+                                    <!-- Technicians will be injected here -->
+                                </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="section-profile" class="hidden">
+                <h2>Meu Perfil</h2>
+                <form id="profile-form" class="ticket-form">
+                    <div class="form-group">
+                        <label for="profile-name">Nome</label>
+                        <input type="text" id="profile-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-email">E-mail (não alterável)</label>
+                        <input type="email" id="profile-email" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-password">Nova Senha (deixe em branco para manter)</label>
+                        <input type="password" id="profile-password" placeholder="********">
+                    </div>
+                    <button type="submit" class="btn-primary">Salvar Alterações</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</section>
+    </div>
+
+    <!-- Modals -->
+    <div id="transfer-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Transferir Chamado</h3>
+                <button class="close-btn" onclick="hideTransferModal()">&times;</button>
+            </div>
+            <form id="transfer-form" class="auth-form">
+                <div class="form-group">
+                    <label for="transfer-tech">Novo Técnico (Opcional)</label>
+                    <select id="transfer-tech">
+                        <option value="">Nenhum (Tornar Disponível)</option>
+                        <!-- Técnicos serão injetados aqui -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transfer-level">Novo Nível (Opcional)</label>
+                    <select id="transfer-level">
+                        <option value="">Manter Nível Atual</option>
+                        <option value="n1">Nível 1</option>
+                        <option value="n2">Nível 2</option>
+                        <option value="n3">Nível 3</option>
+                        <option value="n4">Nível 4 (Admin)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Transferir</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="tech-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Novo Técnico</h3>
+                <button class="close-btn" onclick="hideTechModal()">&times;</button>
+            </div>
+            <form id="new-tech-form" class="auth-form">
+                <div class="form-group">
+                    <label for="tech-name">Nome</label>
+                    <input type="text" id="tech-name" required placeholder="Nome do técnico">
+                </div>
+                <div class="form-group">
+                    <label for="tech-email">E-mail</label>
+                    <input type="email" id="tech-email" required placeholder="email@tecnico.com">
+                </div>
+                <div class="form-group">
+                    <label for="tech-password">Senha</label>
+                    <input type="password" id="tech-password" required placeholder="********">
+                </div>
+                <div class="form-group">
+                    <label for="tech-level">Nível</label>
+                    <select id="tech-level">
+                        <option value="n1">Nível 1</option>
+                        <option value="n2">Nível 2</option>
+                        <option value="n3">Nível 3</option>
+                        <option value="n4">Nível 4 (Admin)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Criar Técnico</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
